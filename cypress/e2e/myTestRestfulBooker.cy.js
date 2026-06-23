@@ -6,7 +6,8 @@ describe("3.1 Reserva exitosa como usuario invitado ", () => {
   afterEach(function () {
     cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
   });
-  it("3.1.1 debe mostrar habitaciones disponibles en la página principal", () => {
+  
+  it("3.1.1 Navegar a la página principal y verificar que se muestran habitaciones disponibles", () => {
     // Verifica el título de la sección de habitaciones
     cy.contains("Our Rooms").should("be.visible");
     cy.get(".row.g-4").should("be.visible");
@@ -130,10 +131,22 @@ describe("3.3 Formulario de contacto", () => {
   afterEach(function () {
     cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
   });
-  it("Completar el formulario de contacto con datos válidos", () => {
+  it("3.3.1 Completar el formulario de contacto con datos válidos", () => {
     cy.fixture("contacto").then((datos) => {
       cy.completarFormularioContacto(datos);
     });
   });
+
+  it("3.3.2 Enviar el mensaje y validar que se muestra la confirmación", () => {
+    cy.fixture("contacto").then((datos) => {
+      cy.completarFormularioContacto(datos);
+ 
+
+    cy.contains("Submit").click();
+    cy.contains('Thanks for getting in touch').should('be.visible');
+    });
+  });
+
+
 });
 });
