@@ -1,12 +1,14 @@
 describe("3.1 Reserva exitosa como usuario invitado ", () => {
   Cypress.on("uncaught:exception", () => false);
+
   beforeEach(() => {
     cy.visit("https://automationintesting.online");
   });
+
   afterEach(function () {
     cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
   });
-  
+
   it("3.1.1 Navegar a la página principal y verificar que se muestran habitaciones disponibles", () => {
     // Verifica el título de la sección de habitaciones
     cy.contains("Our Rooms").should("be.visible");
@@ -14,68 +16,64 @@ describe("3.1 Reserva exitosa como usuario invitado ", () => {
     cy.get(".row.g-4").should("have.length", 3);
   });
 
-
   it("3.1.2 Seleccionar una habitación y abrir el formulario de reserva)", () => {
-   cy.irAlFormularioReserva();
-     cy.get('input[name="firstname"]').should("be.visible");
-  cy.get('input[name="lastname"]').should("be.visible");
-  cy.get('input[name="email"]').should("be.visible");
-  cy.get('input[name="phone"]').should("be.visible");
+    cy.irAlFormularioReserva();
+    cy.get('input[name="firstname"]').should("be.visible");
+    cy.get('input[name="lastname"]').should("be.visible");
+    cy.get('input[name="email"]').should("be.visible");
+    cy.get('input[name="phone"]').should("be.visible");
   });
 
+  it("3.1.3 Completar el formulario con datos válidos (nombre, apellido, email, teléfono y fechas)", () => {
+    cy.irAlFormularioReserva();
 
-it("3.1.3 Completar el formulario con datos válidos (nombre, apellido, email, teléfono y fechas)", () => {
-  cy.irAlFormularioReserva();
     cy.fixture("reserva").then((datos) => {
       cy.completarFormularioReserva(datos);
     });
   });
-
 
   it("3.1.4 Confirmar la reserva y validar que el mensaje de éxito aparece en pantalla", () => {
     cy.contains("Book now").first().click();
     cy.url().should("include", "/reservation/");
     cy.get("#doReservation").should("be.visible").click();
-cy.location('search').then(search => {
-  const params = new URLSearchParams(search)
 
- 
-})
+    cy.location("search").then((search) => {
+      const params = new URLSearchParams(search);
+    });
 
-       cy.get('input[name="firstname"]').should("be.visible");
+    cy.get('input[name="firstname"]').should("be.visible");
 
     //Busco comando que rellena reserva
     cy.fixture("reserva").then((datos) => {
-       cy.obtenerReservaUnaNoche().then((fechas) => {
-    datos.checkin = fechas.checkin
-    datos.checkout = fechas.checkout
-      cy.completarFormularioReserva(datos);
-     });
-     
-      cy.location('search').then((search) => {
-    const params = new URLSearchParams(search);
+      cy.obtenerReservaUnaNoche().then((fechas) => {
+        datos.checkin = fechas.checkin;
+        datos.checkout = fechas.checkout;
+        cy.completarFormularioReserva(datos);
+      });
 
-    expect(params.get('checkin')).to.equal(datos.checkin);
-    expect(params.get('checkout')).to.equal(datos.checkout);
-  });
+      cy.location("search").then((search) => {
+        const params = new URLSearchParams(search);
+
+        expect(params.get("checkin")).to.equal(datos.checkin);
+        expect(params.get("checkout")).to.equal(datos.checkout);
+      });
 
       cy.get(".btn-primary.w-100.mb-3")
         .should("contain.text", "Reserve")
         .click();
 
-      cy.contains('Booking Confirmed', { timeout: 10000 })
-  .should('be.visible')
-
-     
+      cy.contains("Booking Confirmed", { timeout: 10000 }).should("be.visible");
     });
   });
-
+});
 
 describe("3.2 Validaciones del formulario de reserva", () => {
   Cypress.on("uncaught:exception", () => false);
+
   beforeEach(() => {
     cy.visit("https://automationintesting.online");
   });
+
   afterEach(function () {
     cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
   });
@@ -117,26 +115,32 @@ describe("3.2 Validaciones del formulario de reserva", () => {
 
 describe("3.2 (Adicional) Completar formulario", () => {
   Cypress.on("uncaught:exception", () => false);
+
   beforeEach(() => {
     cy.visit("https://automationintesting.online");
   });
+
   afterEach(function () {
     cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
   });
+
   it("Completar el formulario con datos válidos", () => {
     cy.contains("Book now").first().click();
     cy.url().should("include", "/reservation/");
     cy.get("#doReservation").should("be.visible").click();
     cy.get('input[name="firstname"]').should("be.visible");
+
     cy.fixture("reserva").then((datos) => {
       cy.completarFormularioReserva(datos);
     });
   });
+
   it("Confirmar la reserva", () => {
     cy.contains("Book now").first().click();
     cy.url().should("include", "/reservation/");
     cy.get("#doReservation").should("be.visible").click();
     cy.get('input[name="firstname"]').should("be.visible");
+
     cy.fixture("reserva").then((datos) => {
       cy.completarFormularioReserva(datos);
       cy.get(".btn-primary.w-100.mb-3")
@@ -145,14 +149,18 @@ describe("3.2 (Adicional) Completar formulario", () => {
     });
   });
 });
+
 describe("3.3 Formulario de contacto", () => {
   Cypress.on("uncaught:exception", () => false);
+
   beforeEach(() => {
     cy.visit("https://automationintesting.online");
   });
+
   afterEach(function () {
     cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
   });
+
   it("3.3.1 Completar el formulario de contacto con datos válidos", () => {
     cy.fixture("contacto").then((datos) => {
       cy.completarFormularioContacto(datos);
@@ -162,13 +170,40 @@ describe("3.3 Formulario de contacto", () => {
   it("3.3.2 Enviar el mensaje y validar que se muestra la confirmación", () => {
     cy.fixture("contacto").then((datos) => {
       cy.completarFormularioContacto(datos);
- 
+      cy.contains("Submit").click();
+      cy.contains("Thanks for getting in touch").should("be.visible");
+    });
+  });
+});
 
-    cy.contains("Submit").click();
-    cy.contains('Thanks for getting in touch').should('be.visible');
+describe("Suite de Pruebas de API - Shady Meadows", () => {
+  it("CP-24: Debe obtener la lista de habitaciones (GET)", () => {
+    cy.request("GET", "https://automationintesting.online/api/room/").then((response) => {
+      expect(response.status).to.eq(200);
     });
   });
 
+  afterEach(function () {
+    cy.screenshot(`${this.currentTest.title}-${this.currentTest.state}`);
+  });
 
-});
+  it("CP-25: Debe manejar el envío de booking vacío", () => {
+    cy.request({
+      method: "POST",
+      url: "https://automationintesting.online/api/booking/",
+      body: {},
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.be.gte(400);
+    });
+  });
+
+  it("CP-26: Debe loguearse exitosamente como admin", () => {
+    cy.request("POST", "https://automationintesting.online/api/auth/login", {
+      username: "admin",
+      password: "password",
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+    });
+  });
 });
